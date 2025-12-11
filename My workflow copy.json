@@ -1,0 +1,373 @@
+{
+  "name": "My workflow copy",
+  "nodes": [
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.elevenlabs.io/v1/text-to-speech/AyZHHMQV9XrdsDc3dMhK",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "xi-api-key",
+              "value": "e1d6422bf9322debe9d06ab83ef3935217d1ec90d7c91778c7374ab63b02940c"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "name": "Accept",
+              "value": "audio/mpeg"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "text",
+              "value": "={{ $json[\"script\"] }}"
+            }
+          ]
+        },
+        "options": {
+          "response": {
+            "response": {
+              "responseFormat": "file"
+            }
+          }
+        }
+      },
+      "id": "25bc7109-1434-48fc-ab0c-203738fd7eff",
+      "name": "ElevenLabs Text-to-Speech",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        6608,
+        1920
+      ]
+    },
+    {
+      "parameters": {
+        "formTitle": "Podcast Generator",
+        "formDescription": "Enter details to generate your AI podcast",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "podcast_topic",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "target_duration_minutes",
+              "fieldType": "number",
+              "defaultValue": "15",
+              "requiredField": true
+            }
+          ]
+        },
+        "options": {
+          "buttonLabel": "Generate Podcast"
+        }
+      },
+      "id": "c392c4a7-dd1b-4116-abe4-bf3fbead20a5",
+      "name": "Podcast Input Form",
+      "type": "n8n-nodes-base.formTrigger",
+      "typeVersion": 2.3,
+      "position": [
+        5008,
+        1728
+      ],
+      "webhookId": "1e99723e-0b0f-45fb-a24a-a6b5c8e0279b"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "id-1",
+              "leftValue": "={{ $json.output[0].content[0].text }}",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty"
+              }
+            },
+            {
+              "id": "id-2",
+              "leftValue": "={{ $json.output[0].content[0].text }}",
+              "rightValue": "podcast_title",
+              "operator": {
+                "type": "string",
+                "operation": "contains"
+              }
+            },
+            {
+              "id": "id-3",
+              "leftValue": "={{ $json.output[0].content[0].text }}",
+              "rightValue": "topics",
+              "operator": {
+                "type": "string",
+                "operation": "contains"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "f9a43b47-9811-4d1a-8426-1c73b6efb0c1",
+      "name": "Check Outline Valid",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        5584,
+        1728
+      ]
+    },
+    {
+      "parameters": {
+        "errorMessage": "Outline generation failed: missing podcast_title or topics. Please try again."
+      },
+      "id": "2d3d1c0c-5254-4031-a66b-2f8739408ecb",
+      "name": "Error - Outline Failed",
+      "type": "n8n-nodes-base.stopAndError",
+      "typeVersion": 1,
+      "position": [
+        5872,
+        1632
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": false,
+            "leftValue": "",
+            "typeValidation": "loose"
+          },
+          "conditions": [
+            {
+              "id": "id-1",
+              "leftValue": "={{ $json.output[0].content[0].text.length }}",
+              "rightValue": "500",
+              "operator": {
+                "type": "number",
+                "operation": "gt"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "57552881-1c0d-4833-9abe-4dc195529c87",
+      "name": "Check Script Valid",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        6160,
+        1824
+      ]
+    },
+    {
+      "parameters": {
+        "errorMessage": "Script generation failed or script too short (less than 500 characters). Please try again."
+      },
+      "id": "df03f7b3-0766-4ecc-a365-a16cb6b7ce87",
+      "name": "Error - Script Failed",
+      "type": "n8n-nodes-base.stopAndError",
+      "typeVersion": 1,
+      "position": [
+        6384,
+        1728
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "id-1",
+              "name": "script",
+              "value": "={{ $json.output[0].content[0].text }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "6eb312ed-2046-44a7-b3ea-8f9651b455dc",
+      "name": "Prepare Script for TTS",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        6384,
+        1920
+      ]
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "gpt-4o-mini"
+        },
+        "responses": {
+          "values": [
+            {
+              "content": "=Create a podcast outline about: {{ $('Podcast Input Form').first().json.podcast_topic }}\n\nTarget duration: {{ $('Podcast Input Form').first().json.target_duration_minutes }} minutes\n\nReturn ONLY valid JSON in this exact format (no markdown, no code blocks):\n{\n  \"podcast_title\": \"...\",\n  \"overall_summary\": \"...\",\n  \"topics\": [\n    {\n      \"title\": \"...\",\n      \"summary\": \"...\",\n      \"key_points\": [\"...\", \"...\", \"...\"]\n    }\n  ]\n}\n\nCreate 3-5 topics with engaging content suitable for a {{ $('Podcast Input Form').first().json.target_duration_minutes }}-minute podcast."
+            }
+          ]
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "id": "e86df233-87f9-49b2-bb1f-dda3484877a7",
+      "name": "Generate Outline",
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 2.1,
+      "position": [
+        5232,
+        1728
+      ],
+      "credentials": {
+        "openAiApi": {
+          "id": "BKeEQsdu7nAKru2k",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "gpt-4o-mini"
+        },
+        "responses": {
+          "values": [
+            {
+              "content": "=Based on the podcast outline below, write a COMPLETE long-form podcast script that stays fully on-topic and reflects the outline accurately.\n\nTOPIC:\n{{ $('Podcast Input Form').first().json.podcast_topic }}\n\nOUTLINE:\n{{ $json.output[0].content[0].text }}\n\nTARGET DURATION:\nThe script MUST NOT exceed 10 minutes of spoken audio.\nThis means a maximum of about 1,700 words.\nStay between 1,400 and 1,700 words total.\n\nVOICE & TONE (NATURAL, MENTOR STYLE):\n- Write in the tone of a calm, confident Black male educator and mentor speaking to young adults.\n- He sounds experienced but relatable, like a teacher/coach who really cares about his students.\n- The energy is steady, clear, and grounded — not theatrical, not exaggerated, not overly dramatic.\n- Use a warm, conversational style that feels like he’s teaching, explaining, and guiding, not performing.\n- Avoid repeating the same phrases over and over. Vary the wording and keep it natural.\n- You may occasionally use phrases like:\n  “Here’s what I mean,”\n  “Let me explain this clearly,”\n  “Think about this for a moment,”\n  “Here’s why this matters,”\n  but use them sparingly and do not repeat any one phrase more than once.\n\n- NO stretched sounds (no “aaah,” “umm,” “hmm”) and NO long dramatic pauses.\n- Use punctuation (commas, periods, and dashes) for natural flow, but avoid heavy use of ellipses.\n\nLENGTH & DEPTH REQUIREMENTS:\n- Total script length MUST stay between 1,400–1,700 words.\n- Expand each point in the outline with:\n  * Clear explanations in simple language\n  * Relatable real-life examples\n  * Simple analogies from everyday life\n  * Insightful but down-to-earth commentary\n- Keep each section balanced so the pacing stays consistent across the whole episode.\n- Use smooth transitions such as:\n  “Let’s move forward,”\n  “Now let’s build on that,”\n  “Here’s the important part,”\n  “Here’s how this connects to you,”\n\nOUTPUT RULES:\n- Return ONLY the spoken script text.\n- No labels (“Host:”), no section headers.\n- No stage directions like [pause], [music], [laughs].\n- No markdown, no JSON, no code blocks.\n- Write as if this mentor is speaking directly to the listener in a natural, steady, respectful tone.\n\nWrite the complete podcast script now, staying within the 10-minute word limit.\n"
+            }
+          ]
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "id": "7a662caf-74fe-4ed0-8571-d1b2eedda9bc",
+      "name": "Generate Script",
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 2.1,
+      "position": [
+        5808,
+        1824
+      ],
+      "credentials": {
+        "openAiApi": {
+          "id": "BKeEQsdu7nAKru2k",
+          "name": "OpenAi account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Podcast Input Form": {
+      "main": [
+        [
+          {
+            "node": "Generate Outline",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Generate Outline": {
+      "main": [
+        [
+          {
+            "node": "Check Outline Valid",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check Outline Valid": {
+      "main": [
+        [
+          {
+            "node": "Generate Script",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Error - Outline Failed",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Generate Script": {
+      "main": [
+        [
+          {
+            "node": "Check Script Valid",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check Script Valid": {
+      "main": [
+        [
+          {
+            "node": "Prepare Script for TTS",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Error - Script Failed",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare Script for TTS": {
+      "main": [
+        [
+          {
+            "node": "ElevenLabs Text-to-Speech",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "d71ccc64-7da9-4ebc-9780-34a004ecc0be",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "504c0155d157cb1f956d47bb16d6235c42181cf0012efdf3c915651c0a1c3362"
+  },
+  "id": "NojqyG4oemjbhAis",
+  "tags": []
+}
