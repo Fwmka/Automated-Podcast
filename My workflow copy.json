@@ -1,5 +1,5 @@
 {
-  "name": "My workflow copy",
+  "name": "Automated Podcast",
   "nodes": [
     {
       "parameters": {
@@ -39,13 +39,13 @@
           }
         }
       },
-      "id": "25bc7109-1434-48fc-ab0c-203738fd7eff",
+      "id": "c5028af0-4bb3-4727-a0df-540c1f64ea33",
       "name": "ElevenLabs Text-to-Speech",
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.3,
       "position": [
-        6608,
-        1920
+        752,
+        288
       ]
     },
     {
@@ -70,13 +70,13 @@
           "buttonLabel": "Generate Podcast"
         }
       },
-      "id": "c392c4a7-dd1b-4116-abe4-bf3fbead20a5",
+      "id": "a528b7bc-4fca-40fe-9a72-acd3a5b70aa4",
       "name": "Podcast Input Form",
       "type": "n8n-nodes-base.formTrigger",
       "typeVersion": 2.3,
       "position": [
-        5008,
-        1728
+        -864,
+        128
       ],
       "webhookId": "1e99723e-0b0f-45fb-a24a-a6b5c8e0279b"
     },
@@ -121,26 +121,26 @@
         },
         "options": {}
       },
-      "id": "f9a43b47-9811-4d1a-8426-1c73b6efb0c1",
+      "id": "500eb1f4-4858-47d8-bdca-072c4a3eccec",
       "name": "Check Outline Valid",
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.3,
       "position": [
-        5584,
-        1728
+        -288,
+        128
       ]
     },
     {
       "parameters": {
         "errorMessage": "Outline generation failed: missing podcast_title or topics. Please try again."
       },
-      "id": "2d3d1c0c-5254-4031-a66b-2f8739408ecb",
+      "id": "eefa6399-3b6f-4e7e-8fca-1fdc8c6b6889",
       "name": "Error - Outline Failed",
       "type": "n8n-nodes-base.stopAndError",
       "typeVersion": 1,
       "position": [
-        5872,
-        1632
+        0,
+        32
       ]
     },
     {
@@ -166,26 +166,26 @@
         },
         "options": {}
       },
-      "id": "57552881-1c0d-4833-9abe-4dc195529c87",
+      "id": "479d983c-e745-4adc-a8f2-753062d79811",
       "name": "Check Script Valid",
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.3,
       "position": [
-        6160,
-        1824
+        288,
+        224
       ]
     },
     {
       "parameters": {
         "errorMessage": "Script generation failed or script too short (less than 500 characters). Please try again."
       },
-      "id": "df03f7b3-0766-4ecc-a365-a16cb6b7ce87",
+      "id": "5c30c004-a335-4473-a188-e438c20d5f51",
       "name": "Error - Script Failed",
       "type": "n8n-nodes-base.stopAndError",
       "typeVersion": 1,
       "position": [
-        6384,
-        1728
+        512,
+        128
       ]
     },
     {
@@ -202,13 +202,13 @@
         },
         "options": {}
       },
-      "id": "6eb312ed-2046-44a7-b3ea-8f9651b455dc",
+      "id": "ebbe0308-56a1-4cf2-88ba-a5dd3ec47515",
       "name": "Prepare Script for TTS",
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        6384,
-        1920
+        512,
+        320
       ]
     },
     {
@@ -228,18 +228,18 @@
         "builtInTools": {},
         "options": {}
       },
-      "id": "e86df233-87f9-49b2-bb1f-dda3484877a7",
+      "id": "101b19a3-c790-49fc-8d7b-b8a063976ac6",
       "name": "Generate Outline",
       "type": "@n8n/n8n-nodes-langchain.openAi",
       "typeVersion": 2.1,
       "position": [
-        5232,
-        1728
+        -640,
+        128
       ],
       "credentials": {
         "openAiApi": {
-          "id": "BKeEQsdu7nAKru2k",
-          "name": "OpenAi account"
+          "id": "kjltNPb87HGntxfs",
+          "name": "n8n free OpenAI API credits"
         }
       }
     },
@@ -260,20 +260,63 @@
         "builtInTools": {},
         "options": {}
       },
-      "id": "7a662caf-74fe-4ed0-8571-d1b2eedda9bc",
+      "id": "2929cb66-bcb5-434b-bde8-5f7b37f257bb",
       "name": "Generate Script",
       "type": "@n8n/n8n-nodes-langchain.openAi",
       "typeVersion": 2.1,
       "position": [
-        5808,
-        1824
+        -64,
+        224
       ],
       "credentials": {
         "openAiApi": {
-          "id": "BKeEQsdu7nAKru2k",
-          "name": "OpenAi account"
+          "id": "kjltNPb87HGntxfs",
+          "name": "n8n free OpenAI API credits"
         }
       }
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "N2RbgRIoCxE4uo2P",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/N2RbgRIoCxE4uo2P",
+          "cachedResultName": "Time Period Classifier"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Statement": "={{ $json.script }}"
+          },
+          "matchingColumns": [
+            "Statement"
+          ],
+          "schema": [
+            {
+              "id": "Statement",
+              "displayName": "Statement",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": true
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.3,
+      "position": [
+        704,
+        480
+      ],
+      "id": "1808865d-f81e-42dc-b8eb-ed3f45fe48e8",
+      "name": "Call 'Time Period Classifier'"
     }
   ],
   "pinData": {},
@@ -351,23 +394,34 @@
       "main": [
         [
           {
+            "node": "Call 'Time Period Classifier'",
+            "type": "main",
+            "index": 0
+          },
+          {
             "node": "ElevenLabs Text-to-Speech",
             "type": "main",
             "index": 0
           }
         ]
       ]
+    },
+    "Call 'Time Period Classifier'": {
+      "main": [
+        []
+      ]
     }
   },
   "active": false,
   "settings": {
-    "executionOrder": "v1"
+    "executionOrder": "v1",
+    "availableInMCP": false
   },
-  "versionId": "d71ccc64-7da9-4ebc-9780-34a004ecc0be",
+  "versionId": "99d0f92e-697a-417d-8e06-bf5306fa8d68",
   "meta": {
     "templateCredsSetupCompleted": true,
-    "instanceId": "504c0155d157cb1f956d47bb16d6235c42181cf0012efdf3c915651c0a1c3362"
+    "instanceId": "81508090fb11bb70c805b8355ed3db91b23ee16173b628245717c9f1fb3082bd"
   },
-  "id": "NojqyG4oemjbhAis",
+  "id": "A1WSomN04KleVjar",
   "tags": []
 }
